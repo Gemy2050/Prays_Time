@@ -74,7 +74,7 @@ function handleLoation() {
         if(city.code == data.principalSubdivisionCode) {
           fetchData(city.name)
           title.innerHTML = city.arName;
-
+          
           select.querySelectorAll('option').forEach((option) => {
             if(option.value == city.name) {
               option.selected="selected";
@@ -108,9 +108,11 @@ function getInfo(data) {
 
     handleTime(hours, minutes, pray[0]);
 
-    if(hours >= 12) {
+    if(hours > 12) {
       period = "م";
       hours = `0${hours%12}`;
+    } else if(hours == 12) {
+      period = "م";
     }
 
     timesContainer.innerHTML += `
@@ -150,17 +152,19 @@ function handleTime(hours, minutes, pray) {
         el.innerHTML = `متبقى: ${remainHours}:${remainMinutes}:${remainSeconds}`;
         el.parentElement.classList.add("active");
         el.setAttribute("id", id);
+        
+        if(diff < 0) {
+          el.innerHTML = "تم"
+          el.parentElement.classList.remove("active");
+          clearInterval(id);
+        }
+
+        if(+remainHours==0 && +remainMinutes==0 && +remainSeconds==0) {
+          document.querySelector("audio").play();
+          let notify = new Notification(`الان صلاه`+` ${prays[pray]} `, {icon: "./logo.png"});
+          clearInterval(id);
+        }
       } 
-
-      if(diff < 0) {
-        el.innerHTML = "تم"
-        el.parentElement.classList.remove("active");
-        clearInterval(id);
-      }
-
-      if(+remainHours==0 && +remainMinutes==0 && +remainSeconds==0) {
-        document.querySelector("audio").play();
-      }
 
     });
 
