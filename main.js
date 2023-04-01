@@ -83,7 +83,7 @@ function handleLoation() {
         }
       })
     });
-  });
+  }, (err) => fetchData("Al Qāhirah"));
 }
 handleLoation();
 
@@ -138,6 +138,7 @@ function handleTime(hours, minutes, pray) {
 
   let targetTime = new Date(`${new Date().toDateString()} ${hours}:${minutes}`);
   let remainHours=0, remainMinutes=0, remainSeconds=0;
+  let notificationStarted = false;
 
   let id = setInterval(() => {
     let today = new Date();
@@ -153,21 +154,35 @@ function handleTime(hours, minutes, pray) {
         el.parentElement.classList.add("active");
         el.setAttribute("id", id);
         
-        if(diff < 0) {
+        if (+remainHours==0 && +remainMinutes==0 && +remainSeconds==0) {
+          btn.click();
           el.innerHTML = "تم"
           el.parentElement.classList.remove("active");
           clearInterval(id);
+        } else if(diff < 0) {
+          el.innerHTML = "تم"
+          el.parentElement.classList.remove("active");
+          clearInterval(id)
         }
-
-        if(+remainHours==0 && +remainMinutes==0 && +remainSeconds==0) {
-          document.querySelector("audio").play();
-          let notify = new Notification(`الان صلاه`+` ${prays[pray]} `, {icon: "./logo.png"});
-          clearInterval(id);
+        
+        if(+remainMinutes == 14 && +remainHours == 0 && !notificationStarted) {
+          Notification.requestPermission((per) => {
+            if(per == "granted")
+              new Notification(`اقتربت صلاه`+` ${prays[pray]} `, {icon: "./logo.png"});
+            else 
+              alert(`اقتربت صلاه`+` ${prays[pray]} `);
+            
+              notificationStarted = true;
+          });
         }
       } 
-
     });
-
+    
   }, 1000);
+}
+handleTime(17, 30, "Fajr")
 
+let btn = document.getElementById("play-btn");
+btn.onclick = ()=> {
+  document.querySelector("audio").play();
 }
