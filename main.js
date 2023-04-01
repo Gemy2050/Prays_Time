@@ -180,7 +180,6 @@ function handleTime(hours, minutes, pray) {
     
   }, 1000);
 }
-handleTime(17, 30, "Fajr")
 
 let btn = document.getElementById("play-btn");
 btn.onclick = ()=> {
